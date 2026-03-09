@@ -1,0 +1,249 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonsuz Aşkımıza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a0a0f;
+            --env-color: #fcf8e8;
+            --env-border: #d4af37;
+            --width: 700px;
+            --height: 450px;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #3a0d1b, #0a0205);
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Işıltılı Arka Plan */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: transparent;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--d) infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* Ana Konteyner */
+        .container {
+            position: relative;
+            width: var(--width);
+            height: var(--height);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Zarf Gövdesi (Yazı Burada) */
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--env-color);
+            border: 3px solid var(--env-border);
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3; /* Yazı ve gövde kapağın altında kalmayacak */
+        }
+
+        /* Zarf Kapağı (DÜZELTİLDİ: Artık yazıyı kapatmaz) */
+        .flap {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 50%;
+            background: #f1e9cc;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.3s;
+            z-index: 2; /* Başlangıçta yazının arkasında kalsın diye düşük tuttuk */
+            border-bottom: 2px solid var(--env-border);
+        }
+
+        .envelope-title {
+            font-family: 'Great Vibes';
+            font-size: 4rem;
+            color: #5d4037;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            z-index: 4; /* Yazı her zaman kapağın üstünde */
+        }
+
+        /* Mektup (Yüksekliği Sınırlandırıldı) */
+        .letter {
+            position: absolute;
+            width: 92%;
+            height: 90%;
+            left: 4%;
+            top: 5%;
+            background: #fff;
+            background-image: repeating-linear-gradient(white, white 24px, #f0f0f0 25px); /* Çizgili kağıt efekti */
+            border-radius: 5px;
+            padding: 50px;
+            box-sizing: border-box;
+            transition: transform 1s ease-out;
+            z-index: 1;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .letter h1 { color: #c2185b; font-size: 2.8rem; margin: 0; }
+        .letter p { font-size: 1.5rem; color: #444; line-height: 1.8; margin-top: 20px; }
+
+        /* Fotoğraflar */
+        .photo {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border: 10px solid white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
+            object-fit: cover;
+        }
+
+        /* AÇIK DURUMU (YAZI VE MESAJ DÜZENLEMESİ) */
+        .open .flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .open .letter {
+            transform: translateY(-220px); /* Mesajın çok yukarı gitmesi engellendi */
+            z-index: 10;
+        }
+
+        .open .p1 { opacity: 1; transform: translate(-300px, -280px) rotate(-15deg); }
+        .open .p2 { opacity: 1; transform: translate(300px, -280px) rotate(15deg); }
+
+        .open .envelope-title {
+            opacity: 0.1; /* Zarf açılınca yazı hafifleşir */
+            transition: 0.5s;
+        }
+
+        /* Petal/Flower Rain */
+        .petal {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(540deg); }
+        }
+
+        #music-btn {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: rgba(255,255,255,0.1); border: 1px solid white;
+            color: white; padding: 12px 24px; border-radius: 40px; cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars" id="starContainer"></div>
+    <button id="music-btn" onclick="toggleMusic()">🎵 Müziği Başlat</button>
+    <audio id="audio" loop>
+        <source src="/1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container" id="env" onclick="openSurprise()">
+        <div class="flap"></div>
+
+        <div class="envelope">
+            <div class="envelope-title">Nice Senelerimize Güzelimm❤️</div>
+
+            <div style="color: #8d6e63; z-index: 4;">(Dokun ve Aç)</div>
+        </div>
+
+        <div class="letter">
+            <h1>Hayatımın Gün Işığı</h1>
+            <p>
+                Hayatımın neşe kaynağı, <br>
+                her günümü cennete çevirdiğin için teşekkür ederimm. <br>
+                Nice mutlu yıllarımıza Güzelimmm...
+            </p>
+            
+        </div>
+
+        <img src="/1.jpeg" class="photo p1">
+        <img src="/2.jpeg" class="photo p2">
+    </div>
+
+    <script>
+        // Arka plan yıldızları
+        const starBox = document.getElementById('starContainer');
+        for (let i = 0; i < 800; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.width = s.style.height = Math.random() * 3 + 'px';
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.top = Math.random() * 100 + 'vh';
+            s.style.setProperty('--d', (Math.random() * 3 + 2) + 's');
+            starBox.appendChild(s);
+        }
+
+        function openSurprise() {
+            const env = document.getElementById('env');
+            if (!env.classList.contains('open')) {
+                env.classList.add('open');
+                createPetals();
+                document.getElementById('audio').play();
+            }
+        }
+
+        function createPetals() {
+            const icons = ['🌹', '🌸', '💖', '✨', '🌺'];
+            for (let i = 0; i < 12800; i++) {
+                setTimeout(() => {
+                    const p = document.createElement('div');
+                    p.className = 'petal';
+                    p.innerText = icons[Math.floor(Math.random() * icons.length)];
+                    p.style.left = Math.random() * 100 + 'vw';
+                    p.style.top = '-50px';
+                    p.style.fontSize = Math.random() * 20 + 25 + 'px';
+                    p.style.animationDuration = Math.random() * 2 + 3 + 's';
+                    document.body.appendChild(p);
+                    setTimeout(() => p.remove(), 5000);
+                }, i * 40);
+            }
+        }
+
+        function toggleMusic() {
+            const a = document.getElementById('audio');
+            const b = document.getElementById('music-btn');
+            if (a.paused) { a.play(); b.innerText = "⏸ Durdur"; }
+            else { a.pause(); b.innerText = "🎵 Başlat"; }
+        }
+    </script>
+</body>
+</html>
